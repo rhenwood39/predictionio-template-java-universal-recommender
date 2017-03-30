@@ -65,15 +65,12 @@ public class PopModelTest {
     public void calc() throws Exception {
         JavaPairRDD<String, Double> rdd;
 
-        model.calc(RankingType.Random, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
-        model.calc(RankingType.Popular, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
-        model.calc(RankingType.Trending, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
-        model.calc(RankingType.Hot, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
+        model.calc(Ranking.RANDOM, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
+        model.calc(Ranking.POPULAR, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
+        model.calc(Ranking.TRENDING, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
+        model.calc(Ranking.HOT, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
 
-        rdd = model.calc(RankingType.UserDefined, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
-        assertTrue(rdd.isEmpty());
-
-        rdd = model.calc("Hello, world", Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
+        rdd = model.calc(Ranking.USERDEFINED, Arrays.asList("e1", "e2", "e3", "e4", "e6"), eventStore, 200, "");
         assertTrue(rdd.isEmpty());
     }
 
