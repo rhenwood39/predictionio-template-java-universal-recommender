@@ -3,13 +3,18 @@ package org.template.recommendation;
 /**
  * Created by jihunkim on 2/12/17.
  */
-public class RecsModel {
-    public static final String All = "all";
-    public static final String CF = "collabFiltering";
-    public static final String BF = "backfill";
+public enum RecsModel {
+    ALL ("all"),
+    CF("collabFiltering"),
+    BF("backfill");
 
-    @Override
-    public String toString() {
-        return this.All + " | " + this.CF + " | " + this.BF;
+    public final String value;
+
+    RecsModel(String value) {
+        this.value = value;
+    }
+
+    public static String valsAsString() {
+        return ALL.value + " | " + CF.value + " | " + BF.value;
     }
 }

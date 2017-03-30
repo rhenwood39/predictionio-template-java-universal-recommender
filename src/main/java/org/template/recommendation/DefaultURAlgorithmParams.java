@@ -21,7 +21,7 @@ public class DefaultURAlgorithmParams {
     public static final String DefaultDateName = "date";
 
     // use CF + backfill
-    public static final String DefaultRecsModel = RecsModel.All;
+    public static final RecsModel DefaultRecsModel = RecsModel.ALL;
 
     public static final RankingParams DefaultRankingParams = new RankingParams();
     //public static final String DefaultBackfillFieldName = Ranking.POPULAR.fieldName;

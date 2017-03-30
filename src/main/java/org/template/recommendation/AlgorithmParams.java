@@ -14,7 +14,7 @@ public class AlgorithmParams implements Params {
     @Getter private final String appName; // filled in from engine.json
     @Getter private final String indexName; // can optionally be used to specify the elasticsearch index name
     @Getter private final String typeName; // can optionally be used to specify the elasticsearch type name
-    @Getter private final String recsModel;  // "all", "collabFiltering", "backfill"
+    @Getter private final RecsModel recsModel;  // "all", "collabFiltering", "backfill"
     private final List<String> eventNames; // names used to ID all user actions
     private final List<String> blacklistEvents;// None means use the primary event, empty array means no filter
     // number of events in user-based recs query
@@ -37,7 +37,7 @@ public class AlgorithmParams implements Params {
     private final List<IndicatorParams> indicators; // control params per matrix pair
     @Getter private final Long seed;
 
-    public String getRecsModelOrElse(String defaultValue) {
+    public RecsModel getRecsModelOrElse(RecsModel defaultValue) {
         return this.recsModel == null
                 ? defaultValue
                 : this.getRecsModel();

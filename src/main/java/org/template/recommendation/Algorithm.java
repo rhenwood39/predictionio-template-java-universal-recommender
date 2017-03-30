@@ -28,7 +28,7 @@ public class Algorithm extends P2LJavaAlgorithm<PreparedData, NullModel, Query, 
     private final AlgorithmParams ap;
 
     private final String appName;
-    private final String recsModel;
+    private final RecsModel recsModel;
     private final Float userBias;
     private final Float itemBias;
     private final Integer maxQueryEvents;
@@ -351,7 +351,7 @@ public class Algorithm extends P2LJavaAlgorithm<PreparedData, NullModel, Query, 
 
     @Override
     public NullModel train(SparkContext sc, PreparedData preparedData) {
-        if (this.recsModel.equals(RecsModel.All) ||
+        if (this.recsModel.equals(RecsModel.ALL) ||
                 this.recsModel.equals(RecsModel.BF)) {
             return this.calcAll(sc, preparedData);
         } else if (this.recsModel.equals(RecsModel.CF)) {
@@ -359,7 +359,7 @@ public class Algorithm extends P2LJavaAlgorithm<PreparedData, NullModel, Query, 
         } else {
             throw new IllegalArgumentException(
                     String.format("| Bad algorithm param recsModel=[%s] in engine definition params, possibly a bad json value.  |Use one of the available parameter values (%s).",
-                    this.recsModel, new RecsModel().toString())
+                    this.recsModel, RecsModel.valsAsString())
             );
         }
     }
