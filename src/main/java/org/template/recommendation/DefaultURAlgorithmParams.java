@@ -24,8 +24,9 @@ public class DefaultURAlgorithmParams {
     public static final String DefaultRecsModel = RecsModel.All;
 
     public static final RankingParams DefaultRankingParams = new RankingParams();
-    public static final String DefaultBackfillFieldName = RankingFieldName.PopRank;
-    public static final String DefaultBackfillType = RankingType.Popular;
+    //public static final String DefaultBackfillFieldName = Ranking.POPULAR.fieldName;
+    //public static final String DefaultBackfillType = Ranking.POPULAR.type;
+    public static final Ranking DefaultBackfill = Ranking.POPULAR;
 
     // for all time
     public static String DefaultBackfillDuration = "3650 days";

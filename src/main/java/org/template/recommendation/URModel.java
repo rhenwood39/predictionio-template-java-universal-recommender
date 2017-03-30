@@ -92,7 +92,7 @@ public class URModel {
 
             if (dateNames.contains(key))
                 return new DateTime(s).toDate();
-            else if (RankingFieldName.toList().contains(key))
+            else if (Ranking.fieldNamesList().contains(key))
                 return Double.parseDouble(s);
             else
                 return s;

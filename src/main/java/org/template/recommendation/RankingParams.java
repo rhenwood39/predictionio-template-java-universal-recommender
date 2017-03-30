@@ -9,8 +9,8 @@ import java.util.List;
 
 @AllArgsConstructor
 public class RankingParams implements Params {
-    @Getter private final String name;
-    @Getter private final String backfillType; // See [[org.template.BackfillType]]
+    //@Getter private final String name;
+    @Getter private final Ranking backfill; // See [[org.template.BackfillType]]
     private final List<String> eventNames; // None means use the algo eventNames
     // list, otherwise a list of events
     @Getter private final String offsetDate; // used only for tests,
@@ -22,7 +22,7 @@ public class RankingParams implements Params {
 
     public RankingParams() {
         this(
-                null,
+                //null,
                 null,
                 null,
                 null,
@@ -31,16 +31,16 @@ public class RankingParams implements Params {
         );
     }
 
-    public String getNameOrElse(String defaultValue) {
-        return this.name == null
-                ? defaultValue
-                : this.getName();
-    }
+//    public String getNameOrElse(String defaultValue) {
+//        return this.name == null
+//                ? defaultValue
+//                : this.getName();
+//    }
 
-    public String getBackfillTypeOrElse(String defaultValue) {
-        return this.backfillType == null
+    public Ranking getBackfillOrElse(Ranking defaultValue) {
+        return this.backfill == null
                 ? defaultValue
-                : this.getBackfillType();
+                : this.getBackfill();
     }
 
     public List<String> getEventNames() {
@@ -54,8 +54,8 @@ public class RankingParams implements Params {
     @Override
     public String toString() {
         return "RankingParams{" +
-                "name: " + this.name +
-                "type: " + this.backfillType +
+                "name: " + this.backfill.fieldName +
+                "type: " + this.backfill.type +
                 "eventNames: " + this.eventNames +
                 "offsetDate: " + this.offsetDate +
                 "endDate: " + this.endDate +

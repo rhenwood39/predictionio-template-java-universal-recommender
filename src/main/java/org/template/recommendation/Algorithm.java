@@ -69,8 +69,7 @@ public class Algorithm extends P2LJavaAlgorithm<PreparedData, NullModel, Query, 
 
         List<RankingParams> defaultRankingParams = new ArrayList<>(Arrays.asList(
                 new RankingParams(
-                        DefaultURAlgorithmParams.DefaultBackfillFieldName,
-                        DefaultURAlgorithmParams.DefaultBackfillType,
+                        DefaultURAlgorithmParams.DefaultBackfill,
                         this.modelEventNames.subList(0, 1),
                         null,
                         null,
@@ -81,12 +80,10 @@ public class Algorithm extends P2LJavaAlgorithm<PreparedData, NullModel, Query, 
         Collections.sort(this.rankingParams, new RankingParamsComparatorByGroup());
         this.rankingFieldNames = this.rankingParams.stream().map(
                 rankingParams -> {
-                    String rankingType = rankingParams.getBackfillTypeOrElse(
-                            DefaultURAlgorithmParams.DefaultBackfillType
+                    Ranking ranking = rankingParams.getBackfillOrElse(
+                            DefaultURAlgorithmParams.DefaultBackfill
                     );
-                    return rankingParams.getNameOrElse(
-                            PopModel.nameByType.get(rankingType)
-                    );
+                    return ranking.fieldName;
                 }
         ).collect(toList());
         this.dateNames = new ArrayList<>(Arrays.asList(
@@ -104,10 +101,10 @@ public class Algorithm extends P2LJavaAlgorithm<PreparedData, NullModel, Query, 
     class RankingParamsComparatorByGroup implements Comparator<RankingParams> {
         @Override
         public int compare(RankingParams r1, RankingParams r2) {
-            int groupComparison = r1.getBackfillType()
-                    .compareTo(r2.getBackfillType());
+            int groupComparison = r1.getBackfill().type
+                    .compareTo(r2.getBackfill().type);
             return groupComparison == 0
-                    ? r1.getName().compareTo(r2.getName())
+                    ? r1.getBackfill().fieldName.compareTo(r2.getBackfill().fieldName)
                     : groupComparison;
         }
     }
@@ -313,7 +310,7 @@ public class Algorithm extends P2LJavaAlgorithm<PreparedData, NullModel, Query, 
 
     /** Calculate all fields and items needed for ranking.
      *
-     *  @param fieldsRDD all items with their fields
+     *  @param fieldsRdd all items with their fields
      *  @param sc the current Spark context
      *  @return
      */
@@ -324,10 +321,8 @@ public class Algorithm extends P2LJavaAlgorithm<PreparedData, NullModel, Query, 
         PopModel popModel = new PopModel(fieldsRdd, sc);
         List<Tuple2<String, JavaPairRDD<String, Double>>> rankRDDs = new ArrayList();
         for (RankingParams rp : rankingParams){
-            String rankingType = rp.getBackfillType() == null ? DefaultURAlgorithmParams.DefaultBackfillType
-                                : rp.getBackfillType();
-            String rankingFieldName = rp.getName() == null ? PopModel.nameByType.get(rankingType)
-                                      : rp.getName();
+            Ranking ranking = rp.getBackfill() == null ? DefaultURAlgorithmParams.DefaultBackfill
+                                : rp.getBackfill();
             String durationAsString = rp.getDuration() == null ? DefaultURAlgorithmParams.DefaultBackfillDuration
                                       : rp.getDuration();
             Integer duration =  (int) Duration.apply(durationAsString).toSeconds();
@@ -335,8 +330,8 @@ public class Algorithm extends P2LJavaAlgorithm<PreparedData, NullModel, Query, 
                                           : rp.getEventNames();
             String offsetDate = rp.getOffsetDate();
             JavaPairRDD<String, Double> rankRdd =
-                    popModel.calc(rankingType, backfillEvents, new EventStore(appName), duration, offsetDate);
-            rankRDDs.add(new Tuple2<>(rankingFieldName, rankRdd));
+                    popModel.calc(ranking, backfillEvents, new EventStore(appName), duration, offsetDate);
+            rankRDDs.add(new Tuple2<>(ranking.fieldName, rankRdd));
         }
 
         JavaPairRDD<String, Map<String, JsonAST.JValue>> acc = RDDUtils.getEmptyPairRDD(sc);

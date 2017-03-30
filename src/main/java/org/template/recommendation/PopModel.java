@@ -22,31 +22,20 @@ import java.util.Map;
 @AllArgsConstructor
 public class PopModel {
     private transient static final Logger logger = LoggerFactory.getLogger(PopModel.class);
-    public static final Map<String, String> nameByType;
-    static {
-        // TODO: scala version has default value of RankingFieldName.UnknownRank. Do something similar?
-        Map<String, String> map = new HashMap<>();
-        map.put(RankingType.Popular, RankingFieldName.PopRank);
-        map.put(RankingType.Trending, RankingFieldName.TrendRank);
-        map.put(RankingType.Hot, RankingFieldName.HotRank);
-        map.put(RankingType.UserDefined, RankingFieldName.UserRank);
-        map.put(RankingType.Random, RankingFieldName.UniqueRank);
-        nameByType = Collections.unmodifiableMap(map);
-    }
 
     private final JavaPairRDD<String, Map<String, JsonAST.JValue>> fieldsRDD;  // ItemID -> ItemProps
     private final SparkContext sc;
 
     /**
      * Create random rank for all items
-     * @param modelName name of model
+     * @param model type of model
      * @param eventNames names of events we want to look at
      * @param eventStore store of events we want to look at
      * @param duration length of time we want to look at
      * @param offsetDate look at events within [offsetDate - duration, offsetDate). Defaults to now() if empty string or invalid syntax.
      * @return JavaPairRDD &lt ItemID, Double &gt
      */
-    public JavaPairRDD<String, Double> calc(String modelName, List<String> eventNames,
+    public JavaPairRDD<String, Double> calc(Ranking model, List<String> eventNames,
                                             IEventStore eventStore, Integer duration, String offsetDate) {
         // end should always be now except in unusual instances like testing
         DateTime end;
@@ -64,18 +53,18 @@ public class PopModel {
         final Interval interval = new Interval(end.minusSeconds(duration), end);
 
         // based on type of popularity model return a set of (item-id, ranking-number) for all items
-        logger.info("PopModel " + modelName + " using end: " + end + ", and duration: " + duration + ", interval: " + interval);
+        logger.info("PopModel " + model.type + " using end: " + end + ", and duration: " + duration + ", interval: " + interval);
 
-        switch (modelName) {
-            case RankingType.Popular:
+        switch (model) {
+            case POPULAR:
                 return calcPopular(eventStore, eventNames, interval);
-            case RankingType.Trending:
+            case TRENDING:
                 return calcTrending(eventStore, eventNames, interval);
-            case RankingType.Hot:
+            case HOT:
                 return calcHot(eventStore, eventNames, interval);
-            case RankingType.Random:
+            case RANDOM:
                 return calcRandom(eventStore, interval);
-            case RankingType.UserDefined:
+            case USERDEFINED:
                 return RDDUtils.getEmptyPairRDD(sc);
             default:
                 logger.warn( "" +
